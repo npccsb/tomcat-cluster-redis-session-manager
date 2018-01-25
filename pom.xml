@@ -39,17 +39,20 @@
 		    <groupId>org.apache.tomcat</groupId>
 		    <artifactId>tomcat-catalina</artifactId>
 		    <version>8.5.20</version>
+		    <scope>compile</scope>
 		</dependency>
 
 		<dependency>
 		    <groupId>org.apache.tomcat</groupId>
 		    <artifactId>tomcat-servlet-api</artifactId>
 		    <version>8.5.20</version>
+		    <scope>compile</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.tomcat</groupId>
 		    <artifactId>tomcat-api</artifactId>
 		    <version>8.5.20</version>
+		    <scope>compile</scope>
 		</dependency>
 		<!-- For local development end.. -->
 	</dependencies>
