@@ -17,6 +17,7 @@ import org.apache.catalina.session.ManagerBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import redis.clients.jedis.Protocol;
 import tomcat.request.session.SerializationUtil;
 import tomcat.request.session.Session;
 import tomcat.request.session.SessionConstants;
@@ -32,7 +33,9 @@ import tomcat.request.session.data.cache.impl.RedisDataCache;
  * used with non-sticky load-balancers.
  *
  * @author Ranjith Manickam
+ *         2018-01-25 Updated By Spring Cao
  * @since 2.0
+ * 
  */
 public class SessionManager extends ManagerBase implements Lifecycle {
 
@@ -45,6 +48,8 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	protected SessionHandlerValve handlerValve;
 
 	protected Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
+	
+	protected int protocolTimeout = Protocol.DEFAULT_TIMEOUT; //Redis通讯协议默认的超时时间 2000 sec
 
 	private Log log = LogFactory.getLog(SessionManager.class);
 
@@ -344,11 +349,12 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	}
 
 	/**
-	 * @return
+	 * @return Session timeout
 	 */
 	private int getSessionTimeout(Session session) {
 		int timeout = getContextIns().getSessionTimeout() * 60;
-		int sessionTimeout = (session == null) ? 0 : session.getMaxInactiveInterval() * 60;
+		//解决一个累加SessionTimeout时间的Bug，因为每次都会在MaxInactiveInterval上 * 60，当多次调用getSessionTimeout时，将会对传入的参数session的MaxInactiveInterval进行累乘。
+		int sessionTimeout = (session == null) ? 0 : session.getMaxInactiveInterval();
 		return (sessionTimeout < timeout) ? ((timeout < 1800) ? 1800 : timeout) : sessionTimeout;
 	}
 
